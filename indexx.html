@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Letter For You</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-color: #1a0b10;
+      --envelope-base: #a33852;
+      --envelope-dark: #6e1e32;
+      --envelope-light: #c2526b;
+      --gold-accent: #d4af37;
+      --paper-color: #fdfbf7;
+      --text-color: #2c1810;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle, #2d121d 0%, var(--bg-color) 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Cormorant Garamond', serif;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    /* Floating Background Particles */
+    .particle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      animation: floatUp linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh) scale(0.5) rotate(0deg);
+        opacity: 0;
+      }
+      20% { opacity: 0.8; }
+      100% {
+        transform: translateY(-10vh) scale(1.2) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Outer Wrapper */
+    .container {
+      position: relative;
+      width: 100%;
+      max-width: 550px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
+    }
+
+    /* Envelope Container */
+    .envelope-wrapper {
+      position: relative;
+      width: 320px;
+      height: 220px;
+      background: var(--envelope-dark);
+      border-radius: 6px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+      cursor: pointer;
+      transition: transform 0.4s ease;
+    }
+
+    .envelope-wrapper:hover {
+      transform: translateY(-5px);
+    }
+
+    /* Envelope Flaps */
+    .envelope-pocket {
+      position: absolute;
+      bottom: 0;
+      width: 0;
+      height: 0;
+      border-left: 160px solid var(--envelope-base);
+      border-right: 160px solid var(--envelope-base);
+      border-top: 105px solid transparent;
+      border-bottom: 115px solid var(--envelope-light);
+      border-radius: 0 0 6px 6px;
+      z-index: 3;
+    }
+
+    .envelope-top {
+      position: absolute;
+      top: 0;
+      width: 0;
+      height: 0;
+      border-left: 160px solid transparent;
+      border-right: 160px solid transparent;
+      border-top: 125px solid var(--envelope-dark);
+      transform-origin: top;
+      transition: transform 0.6s ease 0.2s, z-index 0.2s 0.4s;
+      z-index: 4;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+
+    /* Victorian Gold Pattern Lines */
+    .envelope-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border: 1px dashed var(--gold-accent);
+      opacity: 0.5;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    /* Wax Seal */
+    .wax-seal {
+      position: absolute;
+      top: 105px;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 55px;
+      height: 55px;
+      background: radial-gradient(circle, #8b0000 0%, #4a0000 100%);
+      border-radius: 50%;
+      border: 2px solid var(--gold-accent);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 6;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .wax-seal::after {
+      content: '♥';
+      color: var(--gold-accent);
+      font-size: 22px;
+    }
+
+    /* Letter Paper (Hidden Inside) */
+    .letter {
+      position: absolute;
+      top: 10px;
+      left: 15px;
+      width: 290px;
+      background: var(--paper-color);
+      background-image: radial-gradient(#e8d8c8 1px, transparent 0);
+      background-size: 16px 16px;
+      padding: 25px 20px;
+      border-radius: 4px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 2;
+      opacity: 0;
+      visibility: hidden;
+      border: 1px solid #e0d0c0;
+    }
+
+    /* Open State Classes */
+    .envelope-wrapper.open .envelope-top {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    .envelope-wrapper.open .wax-seal {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.5);
+      pointer-events: none;
+    }
+
+    .envelope-wrapper.open .letter {
+      opacity: 1;
+      visibility: visible;
+      position: relative;
+      top: 0;
+      left: 0;
+      width: 100%;
+      margin-top: 20px;
+      transform: translateY(0);
+      z-index: 10;
+      box-shadow: 0 10px 30px rgba(0,0
