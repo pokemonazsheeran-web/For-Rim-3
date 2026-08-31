@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Letter for Rim</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #0d0b11;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Cormorant Garamond', serif;
+            overflow-x: hidden;
+            padding: 20px 10px;
+            position: relative;
+        }
+
+        /* Ambient Background Hearts */
+        .heart-particle {
+            position: absolute;
+            color: rgba(220, 100, 120, 0.4);
+            font-size: 1.2rem;
+            animation: floatUp 8s linear infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.8) rotate(0deg); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) scale(1.2) rotate(360deg); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+        }
+
+        /* Envelope Styles */
+        .envelope-container {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            height: 280px;
+            cursor: pointer;
+            perspective: 1000px;
+            animation: gentleFloat 4s ease-in-out infinite;
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #b89876;
+            border-radius: 8px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7), inset 0 0 30px rgba(0,0,0,0.15);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 210px solid transparent;
+            border-right: 210px solid transparent;
+            border-top: 155px solid #a38260;
+            transform-origin: top;
+            transition: transform 0.8s ease-in-out;
+            z-index: 5;
+        }
+
+        @media (max-width: 450px) {
+            .envelope-container { height: 240px; }
+            .envelope-flap {
+                border-left-width: 43vw;
+                border-right-width: 43vw;
+                border-top-width: 32vw;
+            }
+        }
+
+        .envelope-pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 210px solid #aa8967;
+            border-right: 210px solid #aa8967;
+            border-bottom: 140px solid #997857;
+            border-radius: 0 0 8px 8px;
+            z-index: 4;
+        }
+
+        @media (max-width: 450px) {
+            .envelope-pocket {
+                border-left-width: 43vw;
+                border-right-width: 43vw;
+                border-bottom-width: 28vw;
+            }
+        }
+
+        .envelope-title {
+            position: absolute;
+            bottom: 25px;
+            width: 100%;
+            text-align: center;
+            font-family: 'Alex Brush', cursive;
+            font-size: 2.8rem;
+            color: #382519;
+            z-index: 6;
+            pointer-events: none;
+        }
+
+        /* Wax Seal */
+        .wax-seal {
+            position: absolute;
+            top: 130px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #9b111e 0%, #5a0008 100%);
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 7;
+            transition: transform 0.3s ease;
+        }
+
+        .wax-seal::after {
+            content: 'R';
+            font-family: 'Alex Brush', cursive;
+            color: #e6c687;
+            font-size: 2.2rem;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .instruction {
+            margin-top: 25px;
+            color: #d8c2b0;
+            font-size: 1.2rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        /* Parchment Letter Styles */
+        .letter-paper {
+            display: none;
+            width: 100%;
+            background: #f7efe6;
+            background-image: 
+                radial-gradient(#e2d5c5 10%, transparent 11%),
+                linear-gradient(to bottom, rgba(255,255,255,0.5), rgba(215,190,160,0.25));
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8), inset 0 0 90px rgba(120, 70, 30, 0.18);
+            border: 1px solid #d8c4b0;
+            border-radius: 4px;
+            padding: 55px 45px;
+            color: #2b1c14;
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @media (max-width: 600px) {
+            .letter-paper { padding: 35px 22px; }
+        }
+
+        .letter-paper.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .salutation {
+            font-family: 'Alex Brush', cursive;
+            font-size: 3.2rem;
+            color: #1c100b;
+            margin-bottom: 25px;
+        }
+
+        .letter-content p {
+            font-size: 1.3rem;
+            line-height: 1.85;
+            margin-bottom: 22px;
+            text-align: justify;
+            text-justify: inter-word;
+            color: #2b1c14;
+        }
+
+        .letter-content p.emphasis {
+            font-style: italic;
+            font-weight: 600;
+            text-align: center;
+            margin: 30px 0;
+            font-size: 1.4rem;
+            color: #8b0000;
+        }
+
+        .closing {
+            margin-top: 45px;
+            font-size: 1.35rem;
+            line-height: 1.6;
+        }
+
+        .signature {
+            font-family: 'Alex Brush', cursive;
+            font-size: 3.5rem;
+            margin-top: 10px;
+            color: #1c100b;
+        }
+
+        .open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 3;
+        }
+
+        .open .wax-seal {
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Background Hearts -->
+    <div class="heart-particle" style="left: 10%; animation-delay: 0s;">♥</div>
+    <div class="heart-particle" style="left: 25%; animation-delay: 2s;">♥</div>
+    <div class="heart-particle" style="left: 45%; animation-delay: 4s;">♥</div>
+    <div class="heart-particle" style="left: 70%; animation-delay: 1s;">♥</div>
+    <div class="heart-particle" style="left: 85%; animation-delay: 3s;">♥</div>
+
+    <div class="container">
+        <!-- Envelope -->
+        <div class="envelope-container" id="envelope" onclick="openLetter()">
+            <div class="envelope">
+                <div class="envelope-flap"></div>
+                <div class="wax-seal"></div>
+                <div class="envelope-pocket"></div>
+                <div class="envelope-title">For Dearest Rim</div>
+            </div>
+        </div>
+        <div class="instruction" id="instruction">✦ Tap the envelope to open ✦</div>
+
+        <!-- Parchment Letter -->
+        <div class="letter-paper" id="letter">
+            <div class="salutation">To my dearest Rim,</div>
+            <div class="letter-content">
+                <p>I don't really know where to begin, because there are so many things I want to say to you, and somehow, words never seem enough.</p>
+                <p>I still remember the day we came across each other when you were sixteen and I was twenty-one. Back then, I never imagined that a person I had just met would slowly become such a beautiful part of my life. And now, here we are. You are about to turn eighteen, and I am twenty-three. So much has changed, and yet, when I think of you, there is still something wonderfully familiar about us.</p>
+                <p>Sometimes I look back at the little moments we've shared and wonder how something so simple became so precious to me. It was never just the big moments. It was the conversations, the silly things, the laughter, some fights, the little misunderstandings, the waiting for your messages, and those ordinary moments that somehow became extraordinary simply because they were with you.</p>
+                <p>I've never really been the most expressive person. I've always been the calm guy who likes living in his own little world, keeping things to himself and finding comfort in my own thoughts. But somehow, you taught me to step outside of that world a little.</p>
+                <p>You taught me how to enjoy the little things we so often overlook. You taught me how to be more cheerful, how to appreciate moments instead of simply letting them pass, and how to find happiness in the simplest things. You even taught me how to express myself without constantly worrying about being judged.</p>
+                <p>And I don't think you realize how beautiful that is to me.</p>
+                <p>You brought out a side of me that I didn't always know was there. With you, I learned that I could be silly, affectionate, vulnerable, and completely myself. I could say what I felt instead of keeping everything buried inside. In a quiet way, you made my world a little brighter.</p>
+                <p>I don't think you always realize how much you mean to me. Your presence has found its way into so many corners of my life. There are days when I see something beautiful and my first thought is that I wish you were here to see it too. There are songs that remind me of you, places that make me imagine you beside me, and quiet moments when I simply miss you.</p>
+                <p>Of course, we fight sometimes. We misunderstand each other. There are days when I may become a little dry or when my messages become less frequent. Sometimes I have a lot going on in my own life, and I have to deal with things that make me retreat into myself a little.</p>
+                <p>But I never want you to think that my silence means my feelings have changed.</p>
+                
+                <p class="emphasis">They haven't.</p>
+                
+                <p>My love for you is still the same. My feelings are still the same. Even when I don't express them as much as I should, they are still there, quietly existing in the same place they've always been.</p>
+                <p>And I know you've been a little sad with me these past couple of weeks. I know things haven't felt quite the same, and honestly, I still don't know exactly how to bring that spark back to you. I don't know the perfect words or the perfect thing to do. But I want you to know that I try. I really do.</p>
+                <p>Sometimes I may not know how to make everything better, but I never stop caring. Your happiness matters to me, and seeing you happy is something I genuinely cherish. I just hope that, little by little, I can bring that beautiful spark back to your eyes and make you feel the love that I sometimes struggle to put into words.</p>
+                <p>Distance is strange. It makes you realize how much you can long for someone's presence without being able to reach for their hand. But even from far away, you remain close to my heart.</p>
+                <p>There are times when I wish I could simply sit beside you without saying anything. No complicated conversations, no misunderstandings, no distance between us. Just you and me, sharing an ordinary moment together.</p>
+                <p>I don't want to promise you some perfect story, because neither of us is perfect and life certainly isn't. I just want to keep choosing you through the ordinary days—the good ones, the difficult ones, the days when we understand each other perfectly and even the days when we don't.</p>
+                <p>I hope you grow into everything you dream of becoming. I hope life is gentle with you. I hope you always keep that beautiful part of yourself that knows how to find joy in little things. And when you look back one day at this little chapter of your life, I hope you remember that there was someone who genuinely cherished your presence and was grateful that your path crossed his.</p>
+                <p>Thank you for being Rim.</p>
+                <p>Thank you for the laughter, the memories, the conversations, the affection, and even the moments that weren't easy. They all became part of our story.</p>
+                <p>And perhaps that is what makes this little "chithi" special to me. It isn't just a collection of words. It is a small piece of my heart, written down so that you can keep it somewhere, even when I cannot be there beside you.</p>
+                <p>So, on this day, I simply want to say—</p>
+                <p>I am grateful that I found you.<br>
+                I am grateful that you became a part of my life.<br>
+                I am grateful for everything you've taught me, even the things you never realized you were teaching me.<br>
+                And wherever life takes us, I will always be grateful for the chapter we wrote together.</p>
+                <p>And honestly, I look forward to many more chapters, many more years, many more ordinary moments that somehow become extraordinary simply because they are ours.</p>
+                <p>I don't know exactly what the future holds for us. But I know that if I get to have you beside me through more of it, I would consider myself very lucky.</p>
+            </div>
+
+            <div class="closing">
+                With all my affection,
+                <div class="signature">Yours, Azman</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openLetter() {
+            const envelope = document.getElementById('envelope');
+            const instruction = document.getElementById('instruction');
+            const letter = document.getElementById('letter');
+
+            // Open Flap Animation
+            envelope.classList.add('open');
+            instruction.style.opacity = '0';
+
+            // Trigger Heart Confetti
+            setTimeout(() => {
+                confetti({
+                    particleCount: 50,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#ff4d6d', '#ff758f', '#c9184a', '#ffb3c1']
+                });
+            }, 400);
+
+            // Hide Envelope and Reveal Letter
+            setTimeout(() => {
+                envelope.style.opacity = '0';
+                envelope.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    envelope.style.display = 'none';
+                    instruction.style.display = 'none';
+                    letter.classList.add('show');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }, 800);
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
